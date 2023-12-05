@@ -17,7 +17,10 @@ export default function App() {
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  const currentArticle = currentArticleId !== undefined ? articles.find(article => article.article_id === currentArticleId) : null;
+
+  
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
@@ -60,8 +63,6 @@ export default function App() {
       });
 
       localStorage.setItem("token", response.data.token);
-      setIsLoggedIn(true)
-      console.log("Token set in local storage:", localStorage.getItem("token"));
       setMessage(response.data.message);
       
       setSpinnerOn(false);
@@ -87,37 +88,43 @@ export default function App() {
 
     setMessage(''); 
     setSpinnerOn(true); 
-  
-    try {
-      const token = localStorage.getItem('token');
-      console.log('Token for article fetching:', token); 
-  
-      const response = await axiosWithAuth().get(articlesUrl);
-  
-      if (response.status === 200) {
-        const articlesData = response.data;
-        setArticles(articlesData);
-        setMessage('Articles fetched successfully');
-      } else {
-        setMessage('Error fetching articles');
-      }
-    } catch (error) {
-      console.error('Error while fetching articles:', error);
-      if (error.response && error.response.status === 401) {
-        redirectToLogin();
-      } else {
-        setMessage('Network error while fetching articles');
-      }
-    } finally {
-      setSpinnerOn(false);
-    }
+
+    axiosWithAuth().get(articlesUrl).then(res => {
+      setMessage(res.data.message)
+      console.log(res)
+      setArticles(res.data.articles)
+      setSpinnerOn(false)
+      
+    }).catch(err => {
+      console.log(err)
+    })
+
+
   };
 
-  const postArticle = async article => {
+  const postArticle = async (article, setValues) => {
     // ✨ implement
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+
+    setMessage(''); 
+    setSpinnerOn(true); 
+
+    const data = {
+      title: article.title,
+      text: article.text,
+      topic: article.topic,
+    };
+
+    axiosWithAuth().post(articlesUrl, data).then(res => {
+      console.log("postARTICLE", res)
+      setMessage(res.data.message)
+      setSpinnerOn(false)
+      setArticles(prevArticles => [...prevArticles, res.data.article]);
+    }).catch(err => {
+      console.log(err)
+    })
 
     };
     
@@ -125,10 +132,43 @@ export default function App() {
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
     // You got this!
+
+    setMessage(''); 
+    setSpinnerOn(true); 
+
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, article).then(res => {
+      console.log("UPDATE,", res)
+      setArticles(prevArticles => prevArticles.map(a => {
+        if (a.article_id === article_id) {
+          return res.data.article;
+        }
+        return a;
+      }));
+      setMessage(res.data.message)
+
+      setSpinnerOn(false)
+      setCurrentArticleId(null)
+
+    }).catch(err => {
+      console.log(err)
+    })
+
   }
 
   const deleteArticle = article_id => {
     // ✨ implement
+
+    setMessage(''); 
+    setSpinnerOn(true); 
+
+    axiosWithAuth().delete(`${articlesUrl}/${article_id}`).then(res => {
+      console.log(res)
+      setArticles(prevArticles => prevArticles.filter(article => article.article_id !== article_id));
+      setMessage(res.data.message);
+      setSpinnerOn(false)
+    }).catch(err => {
+      console.log(err)
+    })
   }
 
   return (
@@ -150,7 +190,7 @@ export default function App() {
               <ArticleForm 
               postArticle={postArticle}
               updateArticle={updateArticle}
-              currentArticle={articles?.find(article => article.article_id === currentArticleId)}
+              currentArticle={currentArticle}
               setCurrentArticleId={setCurrentArticleId}
               />
               <Articles 

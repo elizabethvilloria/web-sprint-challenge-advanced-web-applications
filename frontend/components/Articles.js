@@ -9,15 +9,19 @@ export default function Articles({ articles, getArticles, deleteArticle, setCurr
 
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
+
   if(!token) {
     return <Navigate to="/" />
   }
 
-  
-  // useEffect(() => {
-  //   // ✨ grab the articles here, on first render only
-  //   getArticles();
-  // }, [])
+  useEffect(() => {
+    // ✨ grab the articles here, on first render only
+      getArticles();
+  }, [])
+
+  const handleEdit = (articleId) => {
+    setCurrentArticleId(articleId);
+  };
 
 
   return (
@@ -37,8 +41,10 @@ export default function Articles({ articles, getArticles, deleteArticle, setCurr
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={() => setCurrentArticleId(art.article_id)}>Edit</button>
-                  <button disabled={true} onClick={() => deleteArticle(art.article_id)}>Delete</button>
+                  <button onClick={() => {
+                  console.log('Editing article:', art); 
+                  handleEdit(art.article_id)}}>Edit</button>
+                  <button onClick={() => deleteArticle(art.article_id)}>Delete</button>
                 </div>
               </div>
             )
