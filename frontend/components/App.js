@@ -139,13 +139,9 @@ export default function App() {
     axiosWithAuth().put(`${articlesUrl}/${article_id}`, article).then(res => {
       console.log("UPDATE,", res)
       setArticles(prevArticles => prevArticles.map(a => {
-        if (a.article_id === article_id) {
-          return res.data.article;
-        }
-        return a;
-      }));
+              return a.article_id === article_id ? res.data.article : a;
+            }));
       setMessage(res.data.message)
-
       setSpinnerOn(false)
       setCurrentArticleId(null)
 
