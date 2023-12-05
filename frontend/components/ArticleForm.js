@@ -19,9 +19,9 @@ export default function ArticleForm({
     // values of the form. If it's not, we should reset the form back to initial values.
     if (currentArticle) {
       setValues({
-        title: currentArticle.title,
-        text: currentArticle.text,
-        topic: currentArticle.topic
+        title: currentArticle?.title,
+        text: currentArticle?.text,
+        topic: currentArticle?.topic
       });
     } else {
       setValues(initialFormValues);
@@ -30,6 +30,7 @@ export default function ArticleForm({
 
   const onChange = evt => {
     const { id, value } = evt.target
+    console.log(id, value)
     setValues({ ...values, [id]: value })
   }
 
@@ -39,7 +40,7 @@ export default function ArticleForm({
     // We must submit a new post or update an existing one,
     // depending on the truthyness of the `currentArticle` prop.
     if (currentArticle) {
-      updateArticle({ ...values, article_id: currentArticle.article_id });
+      updateArticle({ ...values, article_id: currentArticle?.article_id });
     } else {
       postArticle(values);
     }

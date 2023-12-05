@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
@@ -17,6 +17,7 @@ export default function App() {
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState()
   const [spinnerOn, setSpinnerOn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
@@ -26,7 +27,7 @@ export default function App() {
   const redirectToArticles = () => { 
     navigate('/articles')
    }
-
+  
   const logout = () => {
     // ✨ implement
     // If a token is in local storage it should be removed,
@@ -57,18 +58,15 @@ export default function App() {
         username,
         password,
       });
-  
-      if (response.status === 200) {
-        const data = response.data;
-        console.log('Login successful:', data.message);
-        localStorage.setItem('token', data.token);
-        console.log('Token set in local storage:', data.token);
-        navigate('/articles');
-        setMessage(data.message);
-        // await getArticles();
-      } else {
-        setMessage(response.data.message);
-      }
+
+      localStorage.setItem("token", response.data.token);
+      setIsLoggedIn(true)
+      console.log("Token set in local storage:", localStorage.getItem("token"));
+      setMessage(response.data.message);
+      
+      setSpinnerOn(false);
+      navigate('/articles')
+
     } catch (error) {
       setMessage('Login failed: Network error');
     } finally {
@@ -76,11 +74,9 @@ export default function App() {
     }
   };
   
+  const getArticles = async () => {
 
-
-  // const getArticles = async () => {
-
-  // //   // ✨ implement
+      // //   // ✨ implement
   // //   // We should flush the message state, turn on the spinner
   // //   // and launch an authenticated request to the proper endpoint.
   // //   // On success, we should set the articles in their proper state and
@@ -89,34 +85,6 @@ export default function App() {
   // //   // if it's a 401 the token might have gone bad, and we should redirect to login.
   // //   // Don't forget to turn off the spinner!
 
-  //   // setMessage('');
-  //   // setSpinnerOn(true);
-  
-  //   // try {
-  //   //   const token = localStorage.getItem('token');
-  //   //   console.log('Token:', token);
-  //   //   const response = await axiosWithAuth().get(articlesUrl);
-  
-  //   //   if (response.status === 200) {
-  //   //     const articlesData = response.data;
-  //   //     setArticles(articlesData);
-  //   //     setMessage('Articles fetched successfully');
-  //   //   } else {
-  //   //     setMessage('Error fetching articles');
-  //   //   }
-  //   // } catch (error) {
-  //   //   console.error('Error while fetching articles:', error);
-  //   //   if (error.response && error.response.status === 401) {
-  //   //     redirectToLogin();
-  //   //   } else {
-  //   //     setMessage('Network error while fetching articles');
-  //   //   }
-  //   // } finally {
-  //   //   setSpinnerOn(false);
-  //   // }
-  // };
-  
-  const getArticles = async () => {
     setMessage(''); 
     setSpinnerOn(true); 
   
@@ -151,8 +119,8 @@ export default function App() {
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
 
-    
     };
+    
 
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
@@ -182,7 +150,7 @@ export default function App() {
               <ArticleForm 
               postArticle={postArticle}
               updateArticle={updateArticle}
-              currentArticle={articles.find(article => article.article_id === currentArticleId)}
+              currentArticle={articles?.find(article => article.article_id === currentArticleId)}
               setCurrentArticleId={setCurrentArticleId}
               />
               <Articles 
