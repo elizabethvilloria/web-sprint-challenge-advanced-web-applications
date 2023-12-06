@@ -91,7 +91,6 @@ export default function App() {
 
     axiosWithAuth().get(articlesUrl).then(res => {
       setMessage(res.data.message)
-      console.log(res)
       setArticles(res.data.articles)
       setSpinnerOn(false)
       
@@ -120,8 +119,8 @@ export default function App() {
     axiosWithAuth().post(articlesUrl, data).then(res => {
       console.log("postARTICLE", res)
       setMessage(res.data.message)
-      setSpinnerOn(false)
       setArticles(prevArticles => [...prevArticles, res.data.article]);
+      setSpinnerOn(false)
     }).catch(err => {
       console.log(err)
     })
@@ -133,18 +132,14 @@ export default function App() {
     // ✨ implement
     // You got this!
 
-    setMessage(''); 
-    setSpinnerOn(true); 
+    setMessage('');
+    setSpinnerOn(true);
 
     axiosWithAuth().put(`${articlesUrl}/${article_id}`, article).then(res => {
-      console.log("UPDATE,", res)
-      setArticles(prevArticles => prevArticles.map(a => {
-              return a.article_id === article_id ? res.data.article : a;
-            }));
+      console.log(res)
+      setArticles(prevArticles => prevArticles.map(a => a.article_id === article_id ? res.data.article : a));
       setMessage(res.data.message)
       setSpinnerOn(false)
-      setCurrentArticleId(null)
-
     }).catch(err => {
       console.log(err)
     })

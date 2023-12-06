@@ -34,12 +34,11 @@ export default function ArticleForm({
     // depending on the truthyness of the `currentArticle` prop.
     if (currentArticle) {
       updateArticle({ article_id: currentArticle.article_id, article: values });
-      setValues(initialFormValues);
       setCurrentArticleId(null);
     } else {
       postArticle(values);
-      setValues(initialFormValues)
     }
+    setValues(initialFormValues)
   };
   
 
@@ -81,7 +80,7 @@ export default function ArticleForm({
         <option value="Node">Node</option>
       </select>
       <div className="button-group">
-        <button disabled={isDisabled()} id="submitArticle">{currentArticle ? 'Update' : 'Submit'}</button>
+        <button disabled={isDisabled()} id="submitArticle">{currentArticle ? 'Submit' : 'Submit'}</button>
         {currentArticle && (<button type="button" onClick={cancelEdit}>Cancel Edit</button>)}      
     </div>
     </form>

@@ -42,7 +42,6 @@ export default function Articles({ articles, getArticles, deleteArticle, setCurr
                 </div>
                 <div>
                   <button onClick={() => {
-                  console.log('Editing article:', art); 
                   handleEdit(art.article_id)}}>Edit</button>
                   <button onClick={() => deleteArticle(art.article_id)}>Delete</button>
                 </div>
